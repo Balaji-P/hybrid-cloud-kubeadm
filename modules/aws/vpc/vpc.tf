@@ -1,10 +1,10 @@
 resource "aws_vpc" "main" {
     count   =   length(var.CIDR)
-    cidr_block       = var.CIDR[count.index]
+    cidr_block       = "${var.CIDR[count.index]}/16"
     instance_tenancy = "default"
 
   tags = {
-    Name = "main",
+    Name = "DLOS.${count.index}",
     Project =   "${var.Project}",
     TechnologyUnit  =   "${var.TechnologyUnit}",
     BusinessUnit    =   "${var.BusinessUnit}",
