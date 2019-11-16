@@ -13,6 +13,7 @@ resource "aws_nat_gateway" "vpc_one_natGateway" {
 resource "aws_nat_gateway" "vpc_two_natGateway" {
   allocation_id = "${aws_eip.nat_two.id}"
   subnet_id     = "${aws_subnet.vpc_two_controller.id}"
+  provider = "aws.ohio"
   tags = {
     Name = "DLOS-NATGATEWAY-VPC-TWO",
     Project =   "${var.Project}",

@@ -2,6 +2,11 @@ provider "aws" {
   region = "us-east-1"
 }
 
+provider "aws" {
+  region = "us-east-1"
+  alias = "ohio"
+}
+
 variable "cloud" {
     description = "Cloud platform on which we need to the deployment"
     type        = list(string)

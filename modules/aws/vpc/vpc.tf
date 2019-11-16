@@ -13,8 +13,9 @@ resource "aws_vpc" "vpc_one" {
 }
 
 resource "aws_vpc" "vpc_two" {
-    cidr_block       = "lookup(var.CIDR, "vpc_two")"
+    cidr_block       = "${lookup(var.CIDR, "vpc_two")}"
     instance_tenancy = "default"
+    provider = "aws.ohio"
 
 
   tags = {

@@ -1,5 +1,6 @@
 resource "aws_route_table" "vpc_one_controller_route" {
   vpc_id = "${aws_vpc.vpc_one.id}"
+  
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -22,6 +23,7 @@ resource "aws_route_table_association" "vpc_one_controller_association" {
 
 resource "aws_route_table" "vpc_two_controller_route" {
   vpc_id = "${aws_vpc.vpc_two.id}"
+  provider = "aws.ohio"
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -39,6 +41,7 @@ resource "aws_route_table" "vpc_two_controller_route" {
 resource "aws_route_table_association" "vpc_two_controller_association" {
   subnet_id      = "${aws_subnet.vpc_two_controller.id}"
   route_table_id = "${aws_route_table.vpc_two_controller_route.id}"
+  provider = "aws.ohio"
 }
 
 
@@ -67,6 +70,7 @@ resource "aws_route_table_association" "vpc_one_worker_association" {
 
 resource "aws_route_table" "vpc_two_worker_route" {
   vpc_id = "${aws_vpc.vpc_two.id}"
+  provider = "aws.ohio"
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -84,4 +88,5 @@ resource "aws_route_table" "vpc_two_worker_route" {
 resource "aws_route_table_association" "vpc_two_worker_association" {
   subnet_id      = "${aws_subnet.vpc_two_worker.id}"
   route_table_id = "${aws_route_table.vpc_two_worker_route.id}"
+  provider = "aws.ohio"
 }
