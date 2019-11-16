@@ -1,10 +1,10 @@
-resource "aws_vpc" "main" {
-    count   =   length(var.CIDR)
-    cidr_block       = "${var.CIDR[count.index]}/16"
+resource "aws_vpc" "vpc_one" {
+    cidr_block       = "${lookup(var.CIDR, "vpc_one")}"
     instance_tenancy = "default"
 
+
   tags = {
-    Name = "DLOS.${count.index}",
+    Name = "DLOS-vpc_one",
     Project =   "${var.Project}",
     TechnologyUnit  =   "${var.TechnologyUnit}",
     BusinessUnit    =   "${var.BusinessUnit}",
@@ -12,7 +12,16 @@ resource "aws_vpc" "main" {
   }
 }
 
-output "VPC_ID" {
-    value   =   aws_vpc.main[*].id
-    description = "VPC_IDS"
+resource "aws_vpc" "vpc_two" {
+    cidr_block       = "lookup(var.CIDR, "vpc_two")"
+    instance_tenancy = "default"
+
+
+  tags = {
+    Name = "DLOS-vpc_two",
+    Project =   "${var.Project}",
+    TechnologyUnit  =   "${var.TechnologyUnit}",
+    BusinessUnit    =   "${var.BusinessUnit}",
+    Owner   =   "${var.Owner}"
+  }
 }
