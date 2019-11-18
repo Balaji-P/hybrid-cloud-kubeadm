@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "us-east-2"
   alias = "ohio"
 }
 
@@ -15,8 +15,11 @@ variable "cloud" {
 
 variable "region" {
   description = "AWS region in which we need to deploy."
-  type        = list(string)
-  default     = ["us-east-2","us-east-1"]
+  type        = "map"
+  default     = {
+      northvirginia =   "us-east-1"
+      singapore =   "ap-southeast-1"
+  }
 }
 
 variable "CIDR" {
