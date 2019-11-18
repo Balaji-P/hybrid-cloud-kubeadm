@@ -90,3 +90,37 @@ resource "aws_route_table_association" "vpc_two_worker_association" {
   route_table_id = "${aws_route_table.vpc_two_worker_route.id}"
   provider = "aws.ohio"
 }
+
+
+
+###### define routes for VPC peering
+
+resource "aws_route" "vpc_one_controller_route" {
+  route_table_id            = "${aws_route_table.vpc_one_controller_route.id}"
+  destination_cidr_block    = "${lookup(var.CIDR, "vpc_two")}"
+  vpc_peering_connection_id = "${aws_vpc_peering_connection.DLOS-VPC-ONE.id}"
+  depends_on                = ["aws_vpc_peering_connection_accepter.DLOS-VPC-TWO"]
+}
+
+resource "aws_route" "vpc_one_worker_route" {
+  route_table_id            = "${aws_route_table.vpc_one_worker_route.id}"
+  destination_cidr_block    = "${lookup(var.CIDR, "vpc_two")}"
+  vpc_peering_connection_id = "${aws_vpc_peering_connection.DLOS-VPC-ONE.id}"
+  depends_on                = ["aws_vpc_peering_connection_accepter.DLOS-VPC-TWO"]
+}
+
+resource "aws_route" "vpc_two_controller_route" {
+  provider  = "aws.ohio"
+  route_table_id            = "${aws_route_table.vpc_two_controller_route.id}"
+  destination_cidr_block    = "${lookup(var.CIDR, "vpc_one")}"
+  vpc_peering_connection_id = "${aws_vpc_peering_connection.DLOS-VPC-ONE.id}"
+  depends_on                = ["aws_vpc_peering_connection_accepter.DLOS-VPC-TWO"]
+}
+
+resource "aws_route" "vpc_two_worker_route" {
+  provider  = "aws.ohio"
+  route_table_id            = "${aws_route_table.vpc_two_worker_route.id}"
+  destination_cidr_block    = "${lookup(var.CIDR, "vpc_one")}"
+  vpc_peering_connection_id = "${aws_vpc_peering_connection.DLOS-VPC-ONE.id}"
+  depends_on                = ["aws_vpc_peering_connection_accepter.DLOS-VPC-TWO"]
+}
