@@ -2,6 +2,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
+
 provider "aws" {
   region = "us-east-2"
   alias = "ohio"
@@ -28,6 +29,7 @@ variable "CIDR" {
     default =  {
         vpc_one = "10.0.0.0/16"
         vpc_two =   "10.1.0.0/16"
+        vpc_three = "10.2.0.0/16"
     }
 }
 
