@@ -3,6 +3,7 @@ resource "aws_security_group" "vpc_one_controller" {
   name        = "VPC-ONE-CONTROLLER"
   description = "Security Group For Controller"
   vpc_id      = "${aws_vpc.vpc_one.id}"
+  
 
   tags = {
     Name = "DLOS-VPC-ONE-CONTROLLER",
@@ -55,6 +56,7 @@ resource "aws_security_group" "vpc_one_worker" {
   name        = "VPC-ONE-WORKER"
   description = "Security Group For Worker"
   vpc_id      = "${aws_vpc.vpc_one.id}"
+  
   tags = {
     Name = "DLOS-VPC-ONE-WORKER",
     Project =   "${var.Project}",
@@ -99,6 +101,7 @@ resource "aws_security_group" "vpc_two_controller" {
   name        = "VPC-TWO-CONTROLLER"
   description = "Security Group For Controller"
   vpc_id      = "${aws_vpc.vpc_two.id}"
+  
   tags = {
     Name = "DLOS-VPC-TWO-CONTROLLER",
     Project =   "${var.Project}",
@@ -152,6 +155,7 @@ resource "aws_security_group" "vpc_two_worker" {
   name        = "VPC-TWO-WORKER"
   description = "Security Group For Worker"
   vpc_id      = "${aws_vpc.vpc_two.id}"
+  
   tags = {
     Name = "DLOS-VPC-TWO-WORKER",
     Project =   "${var.Project}",

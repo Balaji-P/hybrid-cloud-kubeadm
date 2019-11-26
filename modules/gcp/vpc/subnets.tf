@@ -8,3 +8,4 @@ resource "google_compute_subnetwork" "worker" {
   ip_cidr_range = "${cidrsubnet(lookup(var.CIDR, "vpc_three"),8,lookup(var.netnum_size, "worker"))}"
   network      = "${google_compute_network.vpc_three.name}"
 }
+

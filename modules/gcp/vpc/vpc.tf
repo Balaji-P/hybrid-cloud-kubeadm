@@ -38,5 +38,5 @@ resource "google_compute_firewall" "allow-bastion" {
     protocol = "tcp"
     ports    = ["22"]
   }
-  target_tags = ["controller","worker"]
+  target_tags = ["ssh"]
   }

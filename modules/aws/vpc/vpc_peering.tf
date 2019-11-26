@@ -17,6 +17,7 @@ resource "aws_vpc_peering_connection_accepter" "DLOS-VPC-TWO" {
   provider                  = "aws.ohio"
   vpc_peering_connection_id = "${aws_vpc_peering_connection.DLOS-VPC-ONE.id}"
   auto_accept               = true
+  
 
 
   tags = {

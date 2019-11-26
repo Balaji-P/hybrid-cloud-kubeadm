@@ -47,7 +47,7 @@ variable "Project" {
 variable "Owner" {
     description =   "email ID of a person who will be decision maker for deployment which is being done."
     type    = "string"
-    default =   "chitender.kumar@delhivery.com"
+    default =   "chitender-kumar"
 }
 
 variable "Environment" {

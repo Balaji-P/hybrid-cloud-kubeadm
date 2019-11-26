@@ -4,6 +4,9 @@ resource "aws_instance" "vpc_one_controller" {
     instance_type = "t2.medium"
     security_groups =   ["${aws_security_group.vpc_one_controller.id}"]
     subnet_id   =   "${aws_subnet.vpc_one_controller.id}"
+    private_ip  = "${substr((cidrsubnet(aws_subnet.vpc_one_controller.cidr_block,8,11)),0, 9)}"
+    user_data = "${file("controllerUserData.sh")}"
+    
 
     root_block_device {
     volume_type = "gp2"
@@ -38,6 +41,9 @@ resource "aws_instance" "vpc_two_controller" {
     instance_type = "t2.medium"
     security_groups =   ["${aws_security_group.vpc_two_controller.id}"]
     subnet_id   =   "${aws_subnet.vpc_two_controller.id}"
+    private_ip  = "${substr((cidrsubnet(aws_subnet.vpc_two_controller.cidr_block,8,11)),0, 9)}"
+    user_data = "${file("controllerUserData.sh")}"
+    
 
     root_block_device {
     volume_type = "gp2"
