@@ -1,4 +1,13 @@
 #!/bin/bash
+
+sudo rm -f /var/log/user-data.log
+sudo touch /var/log/user-data.log
+sudo chown ubuntu:ubuntu /var/log/user-data.log
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/null) 2>&1
+
+echo BEGIN
+date '+%Y-%m-%d %H:%M:%S'
+
 sudo apt-get update
 sudo apt-get -y install socat conntrack ipset golang-cfssl awscli
 
@@ -7,6 +16,10 @@ sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
 sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
 
+###### get ca.pem from S3 bucket
+aws s3 cp s3://dlos-platform-poc/ca.pem .
+aws s3 cp s3://dlos-platform-poc/ca-key.pem .
+aws s3 cp s3://dlos-platform-poc/ca-config.json .
 ##### installing required packages
 
 ### ETCD
@@ -108,7 +121,7 @@ cfssl gencert \
 
 KUBERNETES_PUBLIC_ADDRESS='1.2.3.4'
 
-KUBERNETES_HOSTNAMES='kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local'
+KUBERNETES_HOSTNAMES='etcd.dlos-example.com,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local'
 
 cat > kubernetes-csr.json <<EOF
 {
@@ -302,7 +315,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --etcd-cafile=/var/lib/kubernetes/ca.pem \\
   --etcd-certfile=/var/lib/kubernetes/kubernetes.pem \\
   --etcd-keyfile=/var/lib/kubernetes/kubernetes-key.pem \\
-  --etcd-servers=https://10.0.1.11:2379,https://10.1.1.11:2379,https://10.2.1.11:2379 \\
+  --etcd-servers=https://etcd.dlos-example.com:2379 \\
   --event-ttl=1h \\
   --encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \\
   --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \\
@@ -425,3 +438,7 @@ subjects:
     name: kubernetes
 EOF
 
+
+
+echo "User data ends here"
+date '+%Y-%m-%d %H:%M:%S'

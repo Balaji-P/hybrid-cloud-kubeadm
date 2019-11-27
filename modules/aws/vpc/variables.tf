@@ -1,3 +1,8 @@
+provider "google" {
+  project     = "multicloud-kubernetes"
+  region    =   "us-east1"
+}
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -14,6 +19,11 @@ variable "cloud" {
     default = ["AWS"]
 }
 
+variable "gcp_region" {
+    description = "GCP region in which we need to deploy"
+    type    =   string
+    default =   "us-east1"
+}
 variable "region" {
   description = "AWS region in which we need to deploy."
   type        = "map"
@@ -29,7 +39,28 @@ variable "CIDR" {
     default =  {
         vpc_one = "10.0.0.0/16"
         vpc_two =   "10.1.0.0/16"
+        vpc_three = "10.2.0.0/16"
     }
+}
+
+variable GCP_TUN1_VPN_GW_ASN {
+  description = "Tunnel 1 - Virtual Private Gateway ASN, from the AWS VPN Customer Gateway Configuration"
+  default = "64512"
+}
+
+variable GCP_TUN1_CUSTOMER_GW_INSIDE_NETWORK_CIDR {
+  description = "Tunnel 1 - Customer Gateway from Inside IP Address CIDR block, from AWS VPN Customer Gateway Configuration"
+  default = "30"
+}
+
+variable GCP_TUN2_VPN_GW_ASN {
+  description = "Tunnel 2 - Virtual Private Gateway ASN, from the AWS VPN Customer Gateway Configuration"
+  default = "64512"
+}
+
+variable GCP_TUN2_CUSTOMER_GW_INSIDE_NETWORK_CIDR {
+  description = "Tunnel 2 - Customer Gateway from Inside IP Address CIDR block, from AWS VPN Customer Gateway Configuration"
+  default = "30"
 }
 
 variable "netnum_size" {
@@ -44,29 +75,29 @@ variable "netnum_size" {
 variable "Project" {
     description =   "Name of project for which deployment is being done."
     type    = "string"
-    default =   "DLOS"
+    default =   "dlos"
 }
 
 variable "Owner" {
     description =   "email ID of a person who will be decision maker for deployment which is being done."
     type    = "string"
-    default =   "chitender.kumar@delhivery.com"
+    default =   "chitender_kumar"
 }
 
 variable "Environment" {
     description =   "Name of the deployment. Production/Development/Staging/UAT"
     type    = "string"
-    default =   "Development"
+    default =   "development"
 }
 
 variable "TechnologyUnit" {
     description =   "Name of the department under which this project falls."
     type    = "string"
-    default =   "Infrastructure"
+    default =   "infrastructure"
 }
 
 variable "BusinessUnit" {
     description =   "Name of the Business division under which this project falls."
     type    = "string"
-    default =   "DLOS"
+    default =   "dlos"
 }

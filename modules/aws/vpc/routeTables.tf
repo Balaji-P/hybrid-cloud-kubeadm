@@ -7,6 +7,8 @@ resource "aws_route_table" "vpc_one_controller_route" {
     cidr_block = "0.0.0.0/0"
     gateway_id = "${aws_internet_gateway.gw_one.id}"
   }
+
+
     tags = {
     Name = "DLOS-VPC-ONE-CONTROLLER-ROUTE",
     Project =   "${var.Project}",
@@ -32,6 +34,8 @@ resource "aws_route_table" "vpc_two_controller_route" {
     cidr_block = "0.0.0.0/0"
     gateway_id = "${aws_internet_gateway.gw_two.id}"
   }
+
+
     tags = {
     Name = "DLOS-VPC-TWO-CONTROLLER-ROUTE",
     Project =   "${var.Project}",
@@ -58,6 +62,8 @@ resource "aws_route_table" "vpc_one_worker_route" {
     cidr_block = "0.0.0.0/0"
     gateway_id = "${aws_nat_gateway.vpc_one_natGateway.id}"
   }
+
+
     tags = {
     Name = "DLOS-VPC-ONE-WORKER-ROUTE",
     Project =   "${var.Project}",
@@ -83,6 +89,8 @@ resource "aws_route_table" "vpc_two_worker_route" {
     cidr_block = "0.0.0.0/0"
     gateway_id = "${aws_nat_gateway.vpc_two_natGateway.id}"
   }
+
+
     tags = {
     Name = "DLOS-VPC-TWO-WORKER-ROUTE",
     Project =   "${var.Project}",

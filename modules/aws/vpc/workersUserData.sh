@@ -1,5 +1,13 @@
 #!/bin/bash
 
+sudo rm -f /var/log/user-data.log
+sudo touch /var/log/user-data.log
+sudo chown ubuntu:ubuntu /var/log/user-data.log
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/null) 2>&1
+
+echo BEGIN
+date '+%Y-%m-%d %H:%M:%S'
+
 ### Disabling IPV6
 sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
@@ -11,7 +19,7 @@ sudo apt-get -y install socat conntrack ipset golang-cfssl awscli
 KUBERNETES_PUBLIC_ADDRESS='52.20.238.153'
 ###### get ca.pem from S3 bucket
 aws s3 cp s3://dlos-platform-poc/ca.pem .
-aws s3 cp s3://dlos-platform-poc/ca-key.pem ..
+aws s3 cp s3://dlos-platform-poc/ca-key.pem .
 aws s3 cp s3://dlos-platform-poc/kube-proxy.kubeconfig .
 aws s3 cp s3://dlos-platform-poc/ca-config.json .
 HOSTNAME=`hostname -s`
@@ -239,3 +247,6 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable containerd kubelet kube-proxy
 sudo systemctl restart containerd kubelet kube-proxy
+
+echo "User data ends here"
+date '+%Y-%m-%d %H:%M:%S'
