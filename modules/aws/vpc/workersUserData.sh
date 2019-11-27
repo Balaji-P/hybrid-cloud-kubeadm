@@ -16,7 +16,7 @@ sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
 
 sudo apt-get update
 sudo apt-get -y install socat conntrack ipset golang-cfssl awscli
-KUBERNETES_PUBLIC_ADDRESS='52.20.238.153'
+KUBERNETES_PUBLIC_ADDRESS='kubeapi.dlos-example.com'
 ###### get ca.pem from S3 bucket
 aws s3 cp s3://dlos-platform-poc/ca.pem .
 aws s3 cp s3://dlos-platform-poc/ca-key.pem .

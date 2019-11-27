@@ -7,6 +7,14 @@ resource "aws_instance" "vpc_one_controller" {
     private_ip  = "${substr((cidrsubnet(aws_subnet.vpc_one_controller.cidr_block,8,11)),0, 9)}"
     iam_instance_profile = "dlos-wrokers-ec2"
     user_data = "${file("controllerUserData.sh")}"
+
+    depends_on = [
+    "google_dns_record_set.gcp_kubeapi",
+    "google_dns_record_set.gcp_etcd",
+    "google_compute_forwarding_rule.fr_esp",
+    "google_compute_forwarding_rule.fr_udp500",
+    "google_compute_forwarding_rule.fr_udp4500",
+  ]
     
 
     root_block_device {
@@ -46,6 +54,13 @@ resource "aws_instance" "vpc_two_controller" {
     user_data = "${file("controllerUserData.sh")}"
     iam_instance_profile = "dlos-wrokers-ec2"
     
+    depends_on = [
+    "google_dns_record_set.gcp_kubeapi",
+    "google_dns_record_set.gcp_etcd",
+    "google_compute_forwarding_rule.fr_esp",
+    "google_compute_forwarding_rule.fr_udp500",
+    "google_compute_forwarding_rule.fr_udp4500",
+  ]
 
     root_block_device {
     volume_type = "gp2"
@@ -86,6 +101,14 @@ resource "google_compute_instance" "controller_instance" {
  zone         = "us-east1-b"
  tags         = ["controller","ssh"]
  
+ depends_on = [
+    "google_dns_record_set.gcp_kubeapi",
+    "google_dns_record_set.gcp_etcd",
+    "google_compute_forwarding_rule.fr_esp",
+    "google_compute_forwarding_rule.fr_udp500",
+    "google_compute_forwarding_rule.fr_udp4500",
+
+  ]
 
  boot_disk {
    initialize_params {
@@ -96,7 +119,7 @@ resource "google_compute_instance" "controller_instance" {
  }
 
 
- metadata_startup_script = "sudo apt-get update; sudo apt-get install -yq build-essential python-pip rsync; pip install flask"
+ metadata_startup_script = "${file("controllerUserData.sh")}"
 
  network_interface {
    subnetwork = "${google_compute_subnetwork.controller.name}"

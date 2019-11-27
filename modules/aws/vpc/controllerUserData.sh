@@ -121,7 +121,7 @@ cfssl gencert \
 
 KUBERNETES_PUBLIC_ADDRESS='1.2.3.4'
 
-KUBERNETES_HOSTNAMES='etcd.dlos-example.com,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local'
+KUBERNETES_HOSTNAMES='kubeapi.dlos-example.com,etcd.dlos-example.com,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local'
 
 cat > kubernetes-csr.json <<EOF
 {

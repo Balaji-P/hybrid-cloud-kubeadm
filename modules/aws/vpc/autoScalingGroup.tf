@@ -5,6 +5,12 @@ resource "aws_autoscaling_group" "vpc_one_worker" {
   max_size             = 2
   vpc_zone_identifier   =   ["${aws_subnet.vpc_one_worker.id}"]
 
+  depends_on = [
+    "google_compute_forwarding_rule.fr_esp",
+    "google_compute_forwarding_rule.fr_udp500",
+    "google_compute_forwarding_rule.fr_udp4500",
+  ]
+
 
   
 
@@ -54,6 +60,12 @@ resource "aws_autoscaling_group" "vpc_two_worker" {
   min_size             = 1
   max_size             = 2
   vpc_zone_identifier   =   ["${aws_subnet.vpc_two_worker.id}"]
+
+  depends_on = [
+    "google_compute_forwarding_rule.fr_esp",
+    "google_compute_forwarding_rule.fr_udp500",
+    "google_compute_forwarding_rule.fr_udp4500",
+  ]
 
   
 
