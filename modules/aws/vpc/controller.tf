@@ -97,7 +97,7 @@ resource "google_compute_address" "static_controller" {
 }
 resource "google_compute_instance" "controller_instance" {
  name         = "dlos-controller"
- machine_type = "f1-micro"
+ machine_type = "n1-standard-1"
  zone         = "us-east1-b"
  tags         = ["controller","ssh"]
  

@@ -42,7 +42,6 @@ variable "CIDR" {
         vpc_three = "10.2.0.0/16"
     }
 }
-
 variable GCP_TUN1_VPN_GW_ASN {
   description = "Tunnel 1 - Virtual Private Gateway ASN, from the AWS VPN Customer Gateway Configuration"
   default = "64512"
@@ -62,6 +61,7 @@ variable GCP_TUN2_CUSTOMER_GW_INSIDE_NETWORK_CIDR {
   description = "Tunnel 2 - Customer Gateway from Inside IP Address CIDR block, from AWS VPN Customer Gateway Configuration"
   default = "30"
 }
+
 
 variable "netnum_size" {
     description = "Map the friendly name to our subnet bit mask"

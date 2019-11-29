@@ -17,11 +17,80 @@ sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
 sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
 
 ###### get ca.pem from S3 bucket
-aws s3 cp s3://dlos-platform-poc/ca.pem .
-aws s3 cp s3://dlos-platform-poc/ca-key.pem .
-aws s3 cp s3://dlos-platform-poc/ca-config.json .
+#aws s3 cp s3://dlos-platform-poc/ca.pem .
+#aws s3 cp s3://dlos-platform-poc/ca-key.pem .
+#aws s3 cp s3://dlos-platform-poc/ca-config.json .
 ##### installing required packages
+cat > ca-config.json <<EOF
+{
+  "signing": {
+    "default": {
+      "expiry": "8760h"
+    },
+    "profiles": {
+      "kubernetes": {
+        "usages": ["signing", "key encipherment", "server auth", "client auth"],
+        "expiry": "8760h"
+      }
+    }
+  }
+}
+EOF
 
+cat > ca.pem <<EOF
+-----BEGIN CERTIFICATE-----
+MIIDsjCCApqgAwIBAgIUFh7mO/NVcKxhX8ZFr/U8KQExW0IwDQYJKoZIhvcNAQEL
+BQAwcTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcT
+B1NlYXR0bGUxFzAVBgNVBAoTDnN5c3RlbTptYXN0ZXJzMQ0wCwYDVQQLEwRETE9T
+MRMwEQYDVQQDEwpLdWJlcm5ldGVzMB4XDTE5MTEyNjA3NDgwMFoXDTI0MTEyNDA3
+NDgwMFowcTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNV
+BAcTB1NlYXR0bGUxFzAVBgNVBAoTDnN5c3RlbTptYXN0ZXJzMQ0wCwYDVQQLEwRE
+TE9TMRMwEQYDVQQDEwpLdWJlcm5ldGVzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+MIIBCgKCAQEA6ghZaWU1RCmEEvmNnTSmT6aua6YNmsmOknP5CFJDbgS7A23Oj/8Y
+D9CeifGFQhD2nTnmwQVP9p69UZim0+LngioFFBKoLN7/r+6SjIBHt8RQfqJSSLvo
+v0ygQnTKRSb+FX38oR2Ra5LwnacdThpbzoEZ1nBm6+k7HISbJo1998Sd5qcB+eyY
+8+7OoFgrDM+gqEeHPNcVwFqCnu9uI56oa88fASQAQJt1Tjw2Sc2uDKRCjPFwPuH4
+rvAkTNzk2gOm11YOaGOQIIkuG5/J9NOEW0Ci9v24gGbDBc9h784v5EcaqNE2uuPh
+0O/ftLbv3B6HPu6sc+Zigs110uAdM86mGwIDAQABo0IwQDAOBgNVHQ8BAf8EBAMC
+AQYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQURZwuH/HiI4Jc1ft5TmE17emO
+d4IwDQYJKoZIhvcNAQELBQADggEBAFa0m2v66TR2XTw/Uymo4sSYRwPLfvXLb6Rh
+h5f3KEZWCLAw8kBdiouC03073DEUpVZ4qZJSNWLOaRerDntCpuWD6rVdvXjeFqin
+EJgp2/M2QWTIntidj+zQldlb7Ns15E+LJ81rRCzmyCNui2ltlDFDX92pCFdyKsfr
+ys6dJVhN0qJXuj8tCyLaMVn/v0qqRQ0BttmpNB6Ivz4y5Rl3PyCY729Z7qiPQuEe
+/7xPlFpgKMM+UV7VQpSG4jp+ArPlOAlr7T3uPmqqLrrro/BIpkR5U2hNstrVDSNC
+0GaLOFJuQVouu72p7T7n2Rqo1aslhCytK9iXi8VMjBvLx+EXyf0=
+-----END CERTIFICATE-----
+EOF
+
+cat > ca-key.pem <<EOF
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEA6ghZaWU1RCmEEvmNnTSmT6aua6YNmsmOknP5CFJDbgS7A23O
+j/8YD9CeifGFQhD2nTnmwQVP9p69UZim0+LngioFFBKoLN7/r+6SjIBHt8RQfqJS
+SLvov0ygQnTKRSb+FX38oR2Ra5LwnacdThpbzoEZ1nBm6+k7HISbJo1998Sd5qcB
++eyY8+7OoFgrDM+gqEeHPNcVwFqCnu9uI56oa88fASQAQJt1Tjw2Sc2uDKRCjPFw
+PuH4rvAkTNzk2gOm11YOaGOQIIkuG5/J9NOEW0Ci9v24gGbDBc9h784v5EcaqNE2
+uuPh0O/ftLbv3B6HPu6sc+Zigs110uAdM86mGwIDAQABAoIBAD/1zjHexiL90am5
+6DkZpYZJQIwNEtTF1yAxb9MVYHZV9qJmRTjXd8UCuAFtL4Uxy6SGqYkBIax+D7GY
+Lafk8G6De2XT/4Bb5bc4VXburCsODQ2+4QwdxutZTsc60fj6QiCvkPabdR3YR8he
+XsT0sTiL0froN0isMkqF9z0fGFk5LjSFaXE6Z/ts1Dfiq/9NW4JeaSLYV4+t9oLX
+Bbx1Vdsqu3t/xYR9II4Bahhz8zN4JNaOWAsf1EQLg8ZXPi4n0U2x1uVeEawP5Vij
+LyfHIiklkTahWLlksJOTd1UqdPEJ5iqMBGoy/shJIp1o0FpDgUfX3C2fPb7U/JQW
+rfnC6FkCgYEA7pUXLNDeYaDeZbktjjMeQX9ut4ZhTVLeb62NtNb0fi01fA6P23pg
+JA+kkbaB+Uqxy5s7GQDo/JmS2MIsFf7KOqaGzTxk/j+daJXzJJAM5AbZq4Pc6LKv
+etV+XlOaKLSAqla0DOB8bzzg3uxDXQbVNv+Lr285yrbu7Af6GEIH9ZcCgYEA+x46
+LQYgON7Z7iyLtLvxvD0hMpoCqYMH5g0+yKSmlllKdXqDxy5GVijLz3wKYNLhGChz
+kfNZ6dyf8gcGNwRqnLjVP8hQ98GngLy1cGy7nyOuf1RVUZnepSGxuJs4VCWSgn60
+gvAJpMG2FqEKMgpi8neKm6JGovGbOibIqSnZTB0CgYA4O83dk1GHI1qoEVCKfsP3
+3ihje3n9trWVDwwifrPb9Z3woqIHsj1s4n8AlUrnTlK/0dPJHezMdQomqwWnHYne
+7xdA0qZfQvFAEG/hw042hOLTSV5NPqibxCxn4T6pr3nQLGV9z3+k3G2IPZnXGGAy
++WKcNBQkEqAX4/1vsEid+wKBgGfDLba8+UOGkfZgYbnkjxaBC96k1MTGZ9UfU/oE
+TvGBI8s3PIxpCpc/dDffwUoQ2QHqdRaxv01q5IxVarQBFyx7E2KvmwVE97myQCac
+R0qSq9/hMP/u3JjPO2hUewoKHGffgyc3mESD5oGjOVtD/27BBn0YqKdbvhBhRjjg
+GfHhAoGBAMFlxp/J/UEJES/mwrG7RIsBZAGjC9znxEW7uhst8AzJxF7nEbhnR+i6
+tgQ5K5vw9XqBbFSnOmoIo0iACo7eUjCKPW9RRSwOW0e5ujP80LpXTjhJWNmdE97r
+ac2YWaycYSXbnuGVySHNfxe5BXg/V1QCtwkW0VPNYdci6LaXX7W1
+-----END RSA PRIVATE KEY-----
+EOF
 ### ETCD
 wget -q --show-progress --https-only --timestamping \
   "https://github.com/etcd-io/etcd/releases/download/v3.4.0/etcd-v3.4.0-linux-amd64.tar.gz"
