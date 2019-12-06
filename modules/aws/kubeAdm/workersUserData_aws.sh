@@ -1,22 +1,56 @@
 #!/bin/bash
 
+
 sudo rm -f /var/log/user-data.log
 sudo touch /var/log/user-data.log
 sudo chown ubuntu:ubuntu /var/log/user-data.log
+
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/null) 2>&1
 
 echo BEGIN
 date '+%Y-%m-%d %H:%M:%S'
+##### install requisite packages
+sudo apt-get update
+sudo apt-get -y install socat conntrack ipset golang-cfssl awscli jq
+##### setting up the hostname
+hostnamectl set-hostname worker-${RANDOM}.dlos-example.com
 
+##### Register host to Route53 hosted zone
+HOSTNAME=`hostname -f`
+KUBERNETES_PUBLIC_ADDRESS='kubeapi.dlos-example.com'
+
+######## GET POD CIDR
+TAG_NAME='pod-cidr'
+INSTANCE_ID="`wget -qO- http://instance-data/latest/meta-data/instance-id`"
+REGION="`wget -qO- http://instance-data/latest/meta-data/placement/availability-zone | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
+POD_CIDR="`aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=$TAG_NAME" --region $REGION --output=text | cut -f5`"
+
+INTERNAL_IP=`hostname -i|awk '{print $1}'`
+ZONE_ID=`aws route53 list-hosted-zones-by-name |jq --arg name "dlos-example.com." -r '.HostedZones | .[] | select(.Name=="\($name)") | .Id'|awk -F '/' '{print $3}'`
+
+cat > worker-host.json <<EOF
+{
+            "Comment": "registering a worker node",
+            "Changes": [{
+            "Action": "CREATE",
+                        "ResourceRecordSet": {
+                                    "Name": "${HOSTNAME}",
+                                    "Type": "A",
+                                    "TTL": 300,
+                                 "ResourceRecords": [{ "Value": "${INTERNAL_IP}"}]
+}}]
+}
+EOF
+aws route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch file://worker-host.json
+## Enabling packet forwarder
+iptables -A FORWARD -j ACCEPT
 ### Disabling IPV6
 sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
 sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
 
 
-sudo apt-get update
-sudo apt-get -y install socat conntrack ipset golang-cfssl awscli
-KUBERNETES_PUBLIC_ADDRESS='kubeapi.dlos-example.com'
+
 ###### get ca.pem from S3 bucket
 #aws s3 cp s3://dlos-platform-poc/ca.pem .
 #aws s3 cp s3://dlos-platform-poc/ca-key.pem .
@@ -93,7 +127,7 @@ ac2YWaycYSXbnuGVySHNfxe5BXg/V1QCtwkW0VPNYdci6LaXX7W1
 -----END RSA PRIVATE KEY-----
 EOF
 
-HOSTNAME=`hostname -s`
+
 ######## Generating The Kubelet Client Certificates
 cat > ${HOSTNAME}-csr.json <<EOF
 {
@@ -105,16 +139,16 @@ cat > ${HOSTNAME}-csr.json <<EOF
   "names": [
     {
       "C": "US",
-      "L": "Portland",
+      "L": "Seattle",
       "O": "system:nodes",
-      "OU": "Kubernetes The Hard Way",
-      "ST": "Oregon"
+      "OU": "DLOS",
+      "ST": "Washington"
     }
   ]
 }
 EOF
 
-INTERNAL_IP=`hostname -i|awk '{print $1}'`
+
 
 cfssl gencert \
   -ca=ca.pem \
@@ -152,6 +186,53 @@ chmod +x crictl kubectl kube-proxy kubelet runc
 sudo mv crictl kubectl kube-proxy kubelet runc /usr/local/bin/
 sudo mv containerd/bin/* /bin/
 
+#########The Kube Proxy Client Certificate
+cat > kube-proxy-csr.json <<EOF
+{
+  "CN": "system:kube-proxy",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Seattle",
+      "O": "system:node-proxier",
+      "OU": "DLOS",
+      "ST": "Washington"
+    }
+  ]
+}
+EOF
+
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  kube-proxy-csr.json | cfssljson -bare kube-proxy
+
+#########The kube-proxy Kubernetes Configuration File
+kubectl config set-cluster kubernetes-the-hard-way \
+    --certificate-authority=ca.pem \
+    --embed-certs=true \
+    --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \
+    --kubeconfig=kube-proxy.kubeconfig
+
+  kubectl config set-credentials system:kube-proxy \
+    --client-certificate=kube-proxy.pem \
+    --client-key=kube-proxy-key.pem \
+    --embed-certs=true \
+    --kubeconfig=kube-proxy.kubeconfig
+
+  kubectl config set-context default \
+    --cluster=kubernetes-the-hard-way \
+    --user=system:kube-proxy \
+    --kubeconfig=kube-proxy.kubeconfig
+
+  kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+
 ######### Generating kubelet Kubernetes Configuration File
 kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
@@ -175,7 +256,7 @@ kubectl config set-cluster kubernetes-the-hard-way \
 
 
 
-POD_CIDR='10.200.2.0/24'
+
 
 cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 {

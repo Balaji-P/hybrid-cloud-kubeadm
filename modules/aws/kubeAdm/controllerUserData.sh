@@ -508,7 +508,7 @@ subjects:
     name: kubernetes
 EOF
 
-kubectl create rolebinding kube-proxy-list --clusterrole=view --serviceaccount=system:kube-proxy --namespace=kube-system
+
 
 echo "User data ends here"
 date '+%Y-%m-%d %H:%M:%S'

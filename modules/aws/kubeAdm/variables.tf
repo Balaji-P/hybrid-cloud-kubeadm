@@ -9,7 +9,7 @@ provider "aws" {
 
 
 provider "aws" {
-  region = "ap-southeast-1"
+  region = "us-east-2"
   alias = "ohio"
 }
 
@@ -69,7 +69,6 @@ variable "netnum_size" {
     default = {
         controller  =   "1"
         worker  =   "2"
-        elasticsearch = "3"
     }
 }
 

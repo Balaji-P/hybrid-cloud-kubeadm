@@ -23,8 +23,7 @@ resource "aws_autoscaling_group" "vpc_one_worker" {
       },
       {
        "key"  = "pod-cidr"
-       #"value"  = "${aws_vpc_ipv4_cidr_block_association.vpc_one_secondary_cidr.cidr_block}"
-       "value"  = "10.200.0.0/16"
+       "value"  = "${aws_vpc_ipv4_cidr_block_association.vpc_one_secondary_cidr.cidr_block}"
        "propagate_at_launch" = true
 
      }, 
@@ -118,8 +117,7 @@ resource "aws_autoscaling_group" "vpc_two_worker" {
 
      {
        "key"  = "pod-cidr"
-       #"value"  = "${aws_vpc_ipv4_cidr_block_association.vpc_one_secondary_cidr.cidr_block}"
-       "value"  = "10.200.0.0/16"
+       "value"  = "${aws_vpc_ipv4_cidr_block_association.vpc_two_secondary_cidr.cidr_block}"
        "propagate_at_launch" = true
 
      }, 

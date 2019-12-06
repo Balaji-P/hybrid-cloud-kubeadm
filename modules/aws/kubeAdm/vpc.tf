@@ -14,10 +14,10 @@ resource "aws_vpc" "vpc_one" {
   }
 }
 
-#resource "aws_vpc_ipv4_cidr_block_association" "vpc_one_secondary_cidr" {
-#  vpc_id     = "${aws_vpc.vpc_one.id}"
-#  cidr_block = "10.200.0.0/16"
-#}
+resource "aws_vpc_ipv4_cidr_block_association" "vpc_one_secondary_cidr" {
+  vpc_id     = "${aws_vpc.vpc_one.id}"
+  cidr_block = "10.200.0.0/16"
+}
 
 ################ VPC TWO
 resource "aws_vpc" "vpc_two" {
@@ -37,11 +37,11 @@ resource "aws_vpc" "vpc_two" {
   }
 }
 
-#resource "aws_vpc_ipv4_cidr_block_association" "vpc_two_secondary_cidr" {
-#  provider = "aws.ohio"
-#  vpc_id     = "${aws_vpc.vpc_two.id}"
-#  cidr_block = "10.201.0.0/16"
-#}
+resource "aws_vpc_ipv4_cidr_block_association" "vpc_two_secondary_cidr" {
+  provider = "aws.ohio"
+  vpc_id     = "${aws_vpc.vpc_two.id}"
+  cidr_block = "10.201.0.0/16"
+}
 
 
 

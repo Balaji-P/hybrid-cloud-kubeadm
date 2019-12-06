@@ -61,49 +61,6 @@ resource "aws_security_group" "vpc_one_controller" {
   }
 }
 
-################## ELASTICSEARCH
-resource "aws_security_group" "vpc_one_elasticsearch" {
-  name        = "VPC-ONE-ELASTICSEARCH"
-  description = "Security Group For elasticsearch"
-  vpc_id      = "${aws_vpc.vpc_one.id}"
-  
-
-  tags = {
-    Name = "DLOS-VPC-ONE-ELASTICSEARCH",
-    Project =   "${var.Project}",
-    TechnologyUnit  =   "${var.TechnologyUnit}",
-    BusinessUnit    =   "${var.BusinessUnit}",
-    Owner   =   "${var.Owner}"
-  }
-  ingress {
-    # TLS (change to whatever ports you need)
-    description =   "to allow the network traffic internally"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    # Please restrict your ingress to only necessary IPs and ports.
-    # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
-    cidr_blocks = ["${cidrsubnet(lookup(var.CIDR, "vpc_one"),8,lookup(var.netnum_size, "elasticsearch"))}"]
-  }
-  ingress {
-    # TLS (change to whatever ports you need)
-    description =   "to allow the network traffic from Controller and Worker Groups"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    # Please restrict your ingress to only necessary IPs and ports.
-    # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
-    cidr_blocks = ["${lookup(var.CIDR, "vpc_one")}","${lookup(var.CIDR, "vpc_two")}","${lookup(var.CIDR, "vpc_three")}"]
-  }
-
-  
-  egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 resource "aws_security_group" "vpc_one_worker" {
   name        = "VPC-ONE-WORKER"
   description = "Security Group For Worker"
@@ -137,7 +94,7 @@ resource "aws_security_group" "vpc_one_worker" {
     protocol    = "-1"
     # Please restrict your ingress to only necessary IPs and ports.
     # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
-    cidr_blocks = ["10.200.0.0/16"]
+    cidr_blocks = ["${aws_vpc_ipv4_cidr_block_association.vpc_one_secondary_cidr.cidr_block}"]
   }
 
   ingress {
@@ -233,50 +190,6 @@ resource "aws_security_group" "vpc_two_controller" {
   }
 }
 
-################## ELASTICSEARCH
-resource "aws_security_group" "vpc_two_elasticsearch" {
-  name        = "VPC-TWO-ELASTICSEARCH"
-  description = "Security Group For elasticsearch"
-  vpc_id      = "${aws_vpc.vpc_two.id}"
-  provider  =   "aws.ohio"
-  
-
-  tags = {
-    Name = "DLOS-VPC-TWO-ELASTICSEARCH",
-    Project =   "${var.Project}",
-    TechnologyUnit  =   "${var.TechnologyUnit}",
-    BusinessUnit    =   "${var.BusinessUnit}",
-    Owner   =   "${var.Owner}"
-  }
-  ingress {
-    # TLS (change to whatever ports you need)
-    description =   "to allow the network traffic internally"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    # Please restrict your ingress to only necessary IPs and ports.
-    # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
-    cidr_blocks = ["${cidrsubnet(lookup(var.CIDR, "vpc_two"),8,lookup(var.netnum_size, "elasticsearch"))}"]
-  }
-  ingress {
-    # TLS (change to whatever ports you need)
-    description =   "to allow the network traffic from Controller and Worker Groups"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    # Please restrict your ingress to only necessary IPs and ports.
-    # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
-    cidr_blocks = ["${lookup(var.CIDR, "vpc_one")}","${lookup(var.CIDR, "vpc_two")}","${lookup(var.CIDR, "vpc_three")}"]
-  }
-
-  
-  egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 resource "aws_security_group" "vpc_two_worker" {
     provider    =   "aws.ohio"
   name        = "VPC-TWO-WORKER"
@@ -310,7 +223,7 @@ resource "aws_security_group" "vpc_two_worker" {
     protocol    = "-1"
     # Please restrict your ingress to only necessary IPs and ports.
     # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
-    cidr_blocks = ["10.200.0.0/16"]
+    cidr_blocks = ["${aws_vpc_ipv4_cidr_block_association.vpc_two_secondary_cidr.cidr_block}"]
   }
 
   ingress {
